@@ -2,6 +2,6 @@ package com.uniajc;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world desde MAVEN!");
+        System.out.println("Hello world desde JAVA desde la rama Cuenta!");
     }
 }
