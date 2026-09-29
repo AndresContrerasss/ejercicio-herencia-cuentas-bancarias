@@ -1,5 +1,5 @@
 package com.uniajc;
 
-public class CuentaAhorros {
+public class CuentaAhorros extends Cuenta {
 
 }
