@@ -1,7 +1,7 @@
 package com.uniajc;
 
 
-public class CuentaAhorros extends Cuenta {
+public final class CuentaAhorros extends Cuenta {
 
     private boolean activa;
 
