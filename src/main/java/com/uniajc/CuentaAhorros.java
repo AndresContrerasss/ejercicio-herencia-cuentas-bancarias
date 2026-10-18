@@ -1,33 +1,35 @@
 package com.uniajc;
 
+
 public class CuentaAhorros extends Cuenta {
 
-    protected boolean activa = false;
+    private boolean activa;
 
-    final float SALDO_MINIMO = 10000f;
-    final float COMISION_RETIRO = 1000f;
-    final int NUMERO_RETIROS_SIN_COMISION = 4;
+    private static final float SALDO_MINIMO = 10000f;
+    private static final float COMISION_RETIRO = 1000f;
+    private static final int NUMERO_RETIROS_SIN_COMISION = 4;
 
     CuentaAhorros(float saldo, float tasaAnual) {
         super(saldo, tasaAnual);
         cuentaActivaSaldoMinimo();
     }
 
+    // CAMBIO: if/else de 6 líneas -> una expresión.
     public boolean cuentaActivaSaldoMinimo() {
-        if (saldo >= SALDO_MINIMO) {
-            activa = true;
-        } else {
-            activa = false;
-        } 
+        activa = getSaldo() >= SALDO_MINIMO;
         return activa;
     }
 
+    public boolean isActiva() {
+        return activa;
+    }
+
+    // CAMBIO (bug): antes una cuenta inactiva no podía consignar y así nunca
+    // volvía a activarse. Ahora siempre se puede consignar y se reevalúa el estado.
     @Override
     public void consignar(float cantidad) {
-        if (activa) {
-            super.consignar(cantidad);
-            cuentaActivaSaldoMinimo();
-        }
+        super.consignar(cantidad);
+        cuentaActivaSaldoMinimo();
     }
 
     @Override
@@ -38,13 +40,14 @@ public class CuentaAhorros extends Cuenta {
         }
     }
 
+    // CAMBIO: la comisión se ASIGNA (antes "+=" la acumulaba mes a mes) y luego
+    // se delega en el padre, que la descuenta y calcula el interés.
     @Override
     public void extractoMensual() {
-        if (numeroRetiros > NUMERO_RETIROS_SIN_COMISION) {
-            int retirosExcedentes = numeroRetiros - NUMERO_RETIROS_SIN_COMISION;
-            comisionMensual += retirosExcedentes * COMISION_RETIRO;
-            cuentaActivaSaldoMinimo();
-        }
+        int retirosExcedentes = Math.max(0, getNumeroRetiros() - NUMERO_RETIROS_SIN_COMISION);
+        setComisionMensual(retirosExcedentes * COMISION_RETIRO);
+        super.extractoMensual();
+        cuentaActivaSaldoMinimo();
     }
 
     @Override
